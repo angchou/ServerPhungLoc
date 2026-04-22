@@ -18,9 +18,6 @@ public class SanPham {
     private Integer trangThai;
 
     @ManyToOne
-    @JoinColumn(name = "maMenu")
-    private Menu menu;
-    @ManyToOne
     @JoinColumn(name = "maLoai")
     private LoaiSanPham loaiSanPham;
 
@@ -54,14 +51,6 @@ public class SanPham {
 
     public void setMoTa(String moTa) {
         this.moTa = moTa;
-    }
-
-    public Menu getMenu() {
-        return menu;
-    }
-
-    public void setMenu(Menu menu) {
-        this.menu = menu;
     }
 
     public LoaiSanPham getLoaiSanPham() {

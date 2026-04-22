@@ -17,26 +17,26 @@ public class ProductController {
     private ProductServiceImpl productService;
 
     @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('REGION_MANAGER')")
     public String createProduct(@RequestBody CreateProductRequest request) {
         return productService.createProduct(request);
     }
 
     @PatchMapping("/update/{maSanPham}")
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('REGION_MANAGER')")
     public ResponseEntity<?> updateProduct(@PathVariable String maSanPham, @RequestBody CreateProductRequest request) {
         return productService.updateProduct(maSanPham, request);
     }
 
     @DeleteMapping("delete/{maSanPham}")
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('REGION_MANAGER')")
     public ResponseEntity<?> deleteProduct(@PathVariable String maSanPham) {
         return productService.deleteProduct(maSanPham);
     }
 
-    @GetMapping("/get/{maChiNhanh}")
-    @PreAuthorize("hasAnyRole('MANAGER')")
-    public List<ProductResponse> getProduct(@PathVariable String maChiNhanh) {
-        return productService.getProduct(maChiNhanh);
+    @GetMapping("/get")
+    @PreAuthorize("hasAnyRole('MANAGER', 'REGION_MANAGER')")
+    public List<ProductResponse> getProduct() {
+        return productService.getProduct();
     }
 }

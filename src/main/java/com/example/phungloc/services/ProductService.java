@@ -10,5 +10,5 @@ public interface ProductService {
     String createProduct(CreateProductRequest request);
     ResponseEntity<?> updateProduct(String maSanPham, CreateProductRequest request);
     ResponseEntity<?> deleteProduct(String maSanPham);
-    List<ProductResponse> getProduct(String maChiNhanh);
+    List<ProductResponse> getProduct();
 }

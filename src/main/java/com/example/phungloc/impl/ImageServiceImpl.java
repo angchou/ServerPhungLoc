@@ -25,6 +25,7 @@ public class ImageServiceImpl implements ImageService {
     private SanPhamRepo sanPhamRepo;
 
     @Override
+    @Transactional
     public ResponseEntity<?> uploadProductImage(MultipartFile file, String maSanPham) {
         try {
             String filename = System.currentTimeMillis() + "_" + file.getOriginalFilename();
@@ -37,11 +38,13 @@ public class ImageServiceImpl implements ImageService {
                     .orElseThrow(() -> new RuntimeException("Product doesn't exist!"));
             // delete old image
             if (sanPham.getHinhAnh() != null) {
-                File oldFile = new File(sanPham.getHinhAnh());
-                oldFile.delete();
+                String oldFilename = sanPham.getHinhAnh().replace("/uploads/", "");
+                Path oldPath = Paths.get(UPLOAD_DIR, oldFilename);
+                Files.deleteIfExists(oldPath);
             }
             // add new hinhAnh
             sanPham.setHinhAnh("/" + UPLOAD_DIR + filename);
+            sanPhamRepo.save(sanPham);
 
             return ResponseEntity.ok().body("Successfully uploaded image!");
         } catch (RuntimeException | IOException e) {

@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface SanPhamRepo extends JpaRepository<SanPham, String> {
-    List<SanPham> findByMenu_ChiNhanh_MaChiNhanh(String maChiNhanh);
+    List<SanPham> findByTrangThai(Integer trangThai);
 }

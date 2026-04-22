@@ -5,16 +5,20 @@ import com.example.phungloc.dto.response.ProductResponse;
 import com.example.phungloc.entities.LoaiSanPham;
 import com.example.phungloc.entities.Menu;
 import com.example.phungloc.entities.SanPham;
+import com.example.phungloc.entities.UserRole;
 import com.example.phungloc.repositories.LoaiSanPhamRepo;
 import com.example.phungloc.repositories.MenuRepo;
 import com.example.phungloc.repositories.SanPhamRepo;
+import com.example.phungloc.repositories.UserRoleRepo;
 import com.example.phungloc.services.ProductService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -26,6 +30,8 @@ public class ProductServiceImpl implements ProductService {
     private MenuRepo menuRepo;
     @Autowired
     private LoaiSanPhamRepo loaiSanPhamRepo;
+    @Autowired
+    private UserRoleRepo userRoleRepo;
 
     @Override
     @Transactional
@@ -34,16 +40,14 @@ public class ProductServiceImpl implements ProductService {
         SanPham sanPham = new SanPham();
         sanPham.setTenSanPham(request.getTenSanPham());
         sanPham.setMoTa(request.getMoTa());
+        sanPham.setTrangThai(1);
 
-        // get Menu
-        Optional<Menu> menu = menuRepo.findById(request.getMaMenu());
         // get LoaiSanPham
         Optional<LoaiSanPham> loaiSanPham = loaiSanPhamRepo.findById(request.getMaLoai());
-
-        sanPham.setMenu(menu.get());
         sanPham.setLoaiSanPham(loaiSanPham.get());
 
-        // after sending maSanPham -> frontend have to fetch /api/image/upload/{maSanPham} to upload product's image
+        // after sending maSanPham -> frontend has to fetch /api/image/upload/{maSanPham} to upload product's image
+        // if uploading fail, employee still be able to update image
         return sanPhamRepo.save(sanPham).getMaSanPham();
     }
 
@@ -90,17 +94,29 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<ProductResponse> getProduct(String maChiNhanh) {
-        // Manager can see products which have been stopped selling
-        // This api is created only for Manager to track branch's products, not for cashier
-        List<SanPham> danhSachSanPham = sanPhamRepo.findByMenu_ChiNhanh_MaChiNhanh(maChiNhanh);
+    public List<ProductResponse> getProduct() {
+        // Region manager can see products which have been stopped selling
+        // ---
+        // Manager can only see products which are still active
+        // get maNhanvien
+        String maNhanVien = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
+        // find user_role
+        UserRole userRole = userRoleRepo.findByNhanVien_MaNhanVien(maNhanVien);
+
+        List<SanPham> danhSachSanPham = List.of();
+
+        if (userRole.getRole().getRoleName().toUpperCase().equals("MANAGER")) {
+            danhSachSanPham = sanPhamRepo.findByTrangThai(1);
+        }
+        else if (userRole.getRole().getRoleName().toUpperCase().equals("REGION_MANAGER")) {
+            danhSachSanPham = sanPhamRepo.findAll();
+        }
 
         return danhSachSanPham.stream().map(
                 sanPham -> new ProductResponse(
                         sanPham.getMaSanPham(),
                         sanPham.getTenSanPham(),
                         sanPham.getMoTa(),
-                        sanPham.getMenu().getMaMenu(),
                         sanPham.getLoaiSanPham().getMaLoai(),
                         sanPham.getTrangThai()
                 )

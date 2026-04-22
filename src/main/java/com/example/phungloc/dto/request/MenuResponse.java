@@ -1,18 +1,28 @@
-package com.example.phungloc.dto.response;
+package com.example.phungloc.dto.request;
 
-public class ProductResponse {
+public class MenuResponse {
+    private String maCtMenu;
     private String maSanPham;
     private String tenSanPham;
     private String moTa;
     private String maLoai;
     private Integer trangThai;
 
-    public ProductResponse(String maSanPham, String tenSanPham, String moTa, String maLoai, Integer trangThai) {
+    public MenuResponse(String maCtMenu, String maSanPham, String tenSanPham, String moTa, String maLoai, Integer trangThai) {
+        this.maCtMenu = maCtMenu;
         this.maSanPham = maSanPham;
         this.tenSanPham = tenSanPham;
         this.moTa = moTa;
         this.maLoai = maLoai;
         this.trangThai = trangThai;
+    }
+
+    public String getMaCtMenu() {
+        return maCtMenu;
+    }
+
+    public void setMaCtMenu(String maCtMenu) {
+        this.maCtMenu = maCtMenu;
     }
 
     public String getMaSanPham() {
