@@ -14,6 +14,8 @@ public class SanPham {
     private String hinhAnh;
     @Column(name = "moTa")
     private String moTa;
+    @Column(name = "trangThai")
+    private Integer trangThai;
 
     @ManyToOne
     @JoinColumn(name = "maMenu")
@@ -68,5 +70,13 @@ public class SanPham {
 
     public void setLoaiSanPham(LoaiSanPham loaiSanPham) {
         this.loaiSanPham = loaiSanPham;
+    }
+
+    public Integer getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(Integer trangThai) {
+        this.trangThai = trangThai;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.phungloc.auth;
 
+import com.example.phungloc.entities.NhanVien;
+import com.example.phungloc.entities.UserRole;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,23 +15,20 @@ import java.util.List;
 @Component
 public class JwtUtil {
 
-    private static final String SECRET_KEY = "anchou_super_secret_key_anchou_super_secret_key_2026";
+    private static final String SECRET_KEY = "PhungLoc/super_secret_key/chaugiaan_chauhaiham_lephongnha_nguyenthanhkhang/2026@UITers";
     private final Key key = Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
 
-//    public String generateToken(Users user, List<UserRole> userRoles) {
-//        List<String> roles = userRoles
-//                .stream()
-//                .map(userRole -> userRole.getRole().getRoleName())
-//                .toList();
-//
-//        return Jwts.builder()
-//                .setSubject(user.getUserID())
-//                .claim("roles", roles)
-//                .setIssuedAt(new Date())
-//                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
-//                .signWith(key, SignatureAlgorithm.HS256)
-//                .compact();
-//    }
+    public String generateToken(NhanVien nhanVien, UserRole userRole) {
+        String role = userRole.getRole().getRoleName();
+
+        return Jwts.builder()
+                .setSubject(nhanVien.getMaNhanVien())
+                .claim("role", role)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 86400000))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
 
     public Claims getClaims(String token) {
         return Jwts.parserBuilder()

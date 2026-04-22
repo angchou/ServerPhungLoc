@@ -12,6 +12,8 @@ public class NguyenLieu {
     private String tenNguyenLieu;
     @Column(name = "moTa")
     private String moTa;
+    @Column(name = "trangThai")
+    private Integer trangThai;
 
     public String getMaNguyenLieu() {
         return maNguyenLieu;
@@ -35,5 +37,13 @@ public class NguyenLieu {
 
     public void setMoTa(String moTa) {
         this.moTa = moTa;
+    }
+
+    public Integer getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(Integer trangThai) {
+        this.trangThai = trangThai;
     }
 }

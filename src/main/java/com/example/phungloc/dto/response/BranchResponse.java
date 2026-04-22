@@ -1,24 +1,21 @@
-package com.example.phungloc.entities;
-
-import jakarta.persistence.*;
+package com.example.phungloc.dto.response;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "chiNhanh")
-public class ChiNhanh {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "maChiNhanh")
+public class BranchResponse {
     private String maChiNhanh;
-    @Column(name = "tenChiNhanh")
     private String tenChiNhanh;
-    @Column(name = "diaChi")
     private String diaChi;
-    @Column(name = "ngayHoatDong")
-    private LocalDate ngayHoatDong;
-    @Column(name = "trangThai")
     private Integer trangThai;
+    private LocalDate ngayHoatDong;
+
+    public BranchResponse(String maChiNhanh, String tenChiNhanh, String diaChi, Integer trangThai, LocalDate ngayHoatDong) {
+        this.maChiNhanh = maChiNhanh;
+        this.tenChiNhanh = tenChiNhanh;
+        this.diaChi = diaChi;
+        this.trangThai = trangThai;
+        this.ngayHoatDong = ngayHoatDong;
+    }
 
     public String getMaChiNhanh() {
         return maChiNhanh;
@@ -44,19 +41,19 @@ public class ChiNhanh {
         this.diaChi = diaChi;
     }
 
-    public LocalDate getNgayHoatDong() {
-        return ngayHoatDong;
-    }
-
-    public void setNgayHoatDong(LocalDate ngayHoatDong) {
-        this.ngayHoatDong = ngayHoatDong;
-    }
-
     public Integer getTrangThai() {
         return trangThai;
     }
 
     public void setTrangThai(Integer trangThai) {
         this.trangThai = trangThai;
+    }
+
+    public LocalDate getNgayHoatDong() {
+        return ngayHoatDong;
+    }
+
+    public void setNgayHoatDong(LocalDate ngayHoatDong) {
+        this.ngayHoatDong = ngayHoatDong;
     }
 }

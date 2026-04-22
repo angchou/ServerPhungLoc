@@ -18,6 +18,8 @@ public class NhanVien {
     private String matKhau;
     @Column(name = "ngayLamViec")
     private LocalDate ngayLamViec;
+    @Column(name = "trangThai")
+    private Integer trangThai;
 
     @ManyToOne
     @JoinColumn(name = "maChiNhanh")
@@ -69,5 +71,13 @@ public class NhanVien {
 
     public void setChiNhanh(ChiNhanh chiNhanh) {
         this.chiNhanh = chiNhanh;
+    }
+
+    public Integer getTrangThai() {
+        return trangThai;
+    }
+
+    public void setTrangThai(Integer trangThai) {
+        this.trangThai = trangThai;
     }
 }
