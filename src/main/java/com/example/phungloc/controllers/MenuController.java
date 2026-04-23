@@ -30,7 +30,7 @@ public class MenuController {
     }
 
     @GetMapping("/all")
-    @PreAuthorize("hasAnyRole('MANAGER')")
+    @PreAuthorize("hasAnyRole('CASHIER', 'MANAGER')")
     public List<MenuResponse> viewMenu() {
         return menuService.viewMenu();
     }

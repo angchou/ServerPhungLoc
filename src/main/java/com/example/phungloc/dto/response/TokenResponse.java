@@ -2,9 +2,11 @@ package com.example.phungloc.dto.response;
 
 public class TokenResponse {
     private String token;
+    private String roleName;
 
-    public TokenResponse(String token) {
+    public TokenResponse(String token, String roleName) {
         this.token = token;
+        this.roleName = roleName;
     }
 
     public String getToken() {
@@ -13,5 +15,13 @@ public class TokenResponse {
 
     public void setToken(String token) {
         this.token = token;
+    }
+
+    public String getRoleName() {
+        return roleName;
+    }
+
+    public void setRoleName(String roleName) {
+        this.roleName = roleName;
     }
 }

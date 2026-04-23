@@ -1,16 +1,20 @@
 package com.example.phungloc.dto.response;
 
+import java.math.BigDecimal;
+
 public class ProductResponse {
     private String maSanPham;
     private String tenSanPham;
     private String moTa;
+    private BigDecimal giaBan;
     private String maLoai;
     private Integer trangThai;
 
-    public ProductResponse(String maSanPham, String tenSanPham, String moTa, String maLoai, Integer trangThai) {
+    public ProductResponse(String maSanPham, String tenSanPham, String moTa, BigDecimal giaBan, String maLoai, Integer trangThai) {
         this.maSanPham = maSanPham;
         this.tenSanPham = tenSanPham;
         this.moTa = moTa;
+        this.giaBan = giaBan;
         this.maLoai = maLoai;
         this.trangThai = trangThai;
     }
@@ -37,6 +41,14 @@ public class ProductResponse {
 
     public void setMoTa(String moTa) {
         this.moTa = moTa;
+    }
+
+    public BigDecimal getGiaBan() {
+        return giaBan;
+    }
+
+    public void setGiaBan(BigDecimal giaBan) {
+        this.giaBan = giaBan;
     }
 
     public String getMaLoai() {

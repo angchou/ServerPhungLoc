@@ -40,6 +40,7 @@ public class ProductServiceImpl implements ProductService {
         SanPham sanPham = new SanPham();
         sanPham.setTenSanPham(request.getTenSanPham());
         sanPham.setMoTa(request.getMoTa());
+        sanPham.setGiaBan(request.getGiaBan());
         sanPham.setTrangThai(1);
 
         // get LoaiSanPham
@@ -117,6 +118,7 @@ public class ProductServiceImpl implements ProductService {
                         sanPham.getMaSanPham(),
                         sanPham.getTenSanPham(),
                         sanPham.getMoTa(),
+                        sanPham.getGiaBan(),
                         sanPham.getLoaiSanPham().getMaLoai(),
                         sanPham.getTrangThai()
                 )

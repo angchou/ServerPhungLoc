@@ -106,6 +106,8 @@ public class MenuServiceImpl implements MenuService {
                         chiTiet.getSanPham().getMaSanPham(),
                         chiTiet.getSanPham().getTenSanPham(),
                         chiTiet.getSanPham().getMoTa(),
+                        chiTiet.getSanPham().getGiaBan(),
+                        chiTiet.getSanPham().getHinhAnh(),
                         chiTiet.getSanPham().getLoaiSanPham().getMaLoai(),
                         chiTiet.getSanPham().getTrangThai()
                 )

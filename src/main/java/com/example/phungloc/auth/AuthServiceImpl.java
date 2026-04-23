@@ -32,6 +32,6 @@ public class AuthServiceImpl implements AuthService {
         // get token
         String token = jwt.generateToken(nhanVien, userRole);
         // send token
-        return new TokenResponse(token);
+        return new TokenResponse(token, userRole.getRole().getRoleName());
     }
 }
