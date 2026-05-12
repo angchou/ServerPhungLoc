@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface ChiNhanhRepo extends JpaRepository<ChiNhanh, String> {
-    List<ChiNhanh> findByTrangThaiIn(List<Integer> trangThai);
+    List<ChiNhanh> findByTrangThaiInOrderByMaChiNhanhAsc(List<Integer> trangThai);
 }

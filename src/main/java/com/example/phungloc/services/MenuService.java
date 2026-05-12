@@ -2,7 +2,7 @@ package com.example.phungloc.services;
 
 import com.example.phungloc.dto.request.AddProductRequest;
 import com.example.phungloc.dto.request.DeleteProductRequest;
-import com.example.phungloc.dto.request.MenuResponse;
+import com.example.phungloc.dto.response.menu_response.MenuResponse;
 import org.springframework.http.ResponseEntity;
 
 import java.util.List;

@@ -2,7 +2,7 @@ package com.example.phungloc.controllers;
 
 import com.example.phungloc.dto.request.AddProductRequest;
 import com.example.phungloc.dto.request.DeleteProductRequest;
-import com.example.phungloc.dto.request.MenuResponse;
+import com.example.phungloc.dto.response.menu_response.MenuResponse;
 import com.example.phungloc.impl.MenuServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api/menu")
 public class MenuController {
     @Autowired
@@ -29,7 +30,7 @@ public class MenuController {
         return menuService.deleteProductMenu(request);
     }
 
-    @GetMapping("/all")
+    @GetMapping("/view")
     @PreAuthorize("hasAnyRole('CASHIER', 'MANAGER')")
     public List<MenuResponse> viewMenu() {
         return menuService.viewMenu();

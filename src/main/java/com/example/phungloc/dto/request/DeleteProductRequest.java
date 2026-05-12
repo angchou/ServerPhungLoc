@@ -1,22 +1,12 @@
 package com.example.phungloc.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class DeleteProductRequest {
-    private String maMenu;
+    @NotBlank(message = "Mã chi tiết menu đang có giá trị null!")
     private String maCtMenu;
-
-    public String getMaMenu() {
-        return maMenu;
-    }
-
-    public void setMaMenu(String maMenu) {
-        this.maMenu = maMenu;
-    }
-
-    public String getMaCtMenu() {
-        return maCtMenu;
-    }
-
-    public void setMaCtMenu(String maCtMenu) {
-        this.maCtMenu = maCtMenu;
-    }
 }

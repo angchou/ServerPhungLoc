@@ -1,22 +1,13 @@
 package com.example.phungloc.dto.request;
 
+import jakarta.validation.constraints.NotBlank;
+import lombok.Getter;
+import lombok.Setter;
+
+@Setter
+@Getter
 public class AddProductRequest {
-    private String maMenu;
+    @NotBlank(message = "Mã sản phẩm đang có giá trị null!")
     private String maSanPham;
 
-    public String getMaMenu() {
-        return maMenu;
-    }
-
-    public void setMaMenu(String maMenu) {
-        this.maMenu = maMenu;
-    }
-
-    public String getMaSanPham() {
-        return maSanPham;
-    }
-
-    public void setMaSanPham(String maSanPham) {
-        this.maSanPham = maSanPham;
-    }
 }

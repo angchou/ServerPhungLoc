@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "hoaDon")
@@ -12,10 +13,12 @@ public class HoaDon {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "soHoaDon")
     private String soHoaDon;
+    @Column(name = "uuid")
+    private String uuid;
     @Column(name = "tongTien")
     private BigDecimal tongTien;
     @Column(name = "ngayTao")
-    private LocalDate ngayTao;
+    private LocalDateTime ngayTao;
 
     @ManyToOne
     @JoinColumn(name = "maChiNhanh")
@@ -32,6 +35,14 @@ public class HoaDon {
         this.soHoaDon = soHoaDon;
     }
 
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
+    }
+
     public BigDecimal getTongTien() {
         return tongTien;
     }
@@ -40,11 +51,11 @@ public class HoaDon {
         this.tongTien = tongTien;
     }
 
-    public LocalDate getNgayTao() {
+    public LocalDateTime getNgayTao() {
         return ngayTao;
     }
 
-    public void setNgayTao(LocalDate ngayTao) {
+    public void setNgayTao(LocalDateTime ngayTao) {
         this.ngayTao = ngayTao;
     }
 

@@ -2,7 +2,9 @@ package com.example.phungloc.entities;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 @Entity
 @Table(name = "CongThuc")
@@ -13,8 +15,13 @@ public class CongThuc {
     private String maCongThuc;
     @Column(name = "ngayTao")
     private LocalDate ngayTao;
+    @Column(name = "giaUpsize")
+    private BigDecimal giaUpsize;
 
-    @OneToOne
+    @OneToMany(mappedBy = "congThuc", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DinhMuc> danhSachDinhMuc;
+
+    @ManyToOne
     @JoinColumn(name = "maSanPham")
     private SanPham sanPham;
     @ManyToOne
@@ -51,5 +58,21 @@ public class CongThuc {
 
     public void setKichCo(KichCo kichCo) {
         this.kichCo = kichCo;
+    }
+
+    public BigDecimal getGiaUpsize() {
+        return giaUpsize;
+    }
+
+    public void setGiaUpsize(BigDecimal giaUpsize) {
+        this.giaUpsize = giaUpsize;
+    }
+
+    public List<DinhMuc> getDanhSachDinhMuc() {
+        return danhSachDinhMuc;
+    }
+
+    public void setDanhSachDinhMuc(List<DinhMuc> danhSachDinhMuc) {
+        this.danhSachDinhMuc = danhSachDinhMuc;
     }
 }

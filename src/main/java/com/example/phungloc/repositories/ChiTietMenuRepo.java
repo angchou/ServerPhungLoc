@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface ChiTietMenuRepo extends JpaRepository<ChiTietMenu, String> {
     List<ChiTietMenu> findByMenu(Menu menu);
+    boolean existsByMenu_MaMenuAndSanPham_MaSanPham(String maMenu, String maSanPham);
 }

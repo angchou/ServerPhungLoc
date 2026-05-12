@@ -1,21 +1,23 @@
 package com.example.phungloc.impl;
 
-import com.example.phungloc.dto.request.CreateIngredientRequest;
-import com.example.phungloc.dto.response.IngredientResponse;
-import com.example.phungloc.entities.NguyenLieu;
-import com.example.phungloc.entities.UserRole;
-import com.example.phungloc.repositories.NguyenLieuRepo;
-import com.example.phungloc.repositories.UserRoleRepo;
+import com.example.phungloc.dto.request.ingredient_request.CreateIngredientRequest;
+import com.example.phungloc.dto.response.ingredient_response.IngredientResponse;
+import com.example.phungloc.entities.*;
+import com.example.phungloc.repositories.*;
 import com.example.phungloc.services.IngredientService;
+import com.example.phungloc.exception.AppException;
+import com.example.phungloc.exception.ErrorCode;
 import jakarta.transaction.Transactional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import static com.example.phungloc.util.UpdateHelper.updateIfChange;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Objects;
 
+@Slf4j
 @Service
 public class IngredientServiceImpl implements IngredientService {
 
@@ -23,95 +25,168 @@ public class IngredientServiceImpl implements IngredientService {
     private NguyenLieuRepo nguyenLieuRepo;
     @Autowired
     private UserRoleRepo userRoleRepo;
+    @Autowired
+    private NhaCungCapRepo nhaCungCapRepo;
+    @Autowired
+    private KhoRepo khoRepo;
+    @Autowired
+    private ChiTietKhoRepo chiTietKhoRepo;
 
     @Override
     @Transactional
-    public ResponseEntity<?> createIngredient(CreateIngredientRequest request) {
-        // create a new Ingredient
+    public void createIngredient(CreateIngredientRequest request) {
+        log.info("Creating new ingredient: {}", request.getTenNguyenLieu());
         NguyenLieu nguyenLieu = new NguyenLieu();
-        nguyenLieu.setTenNguyenLieu(request.getTenNguyenLieu());
-        nguyenLieu.setMoTa(request.getMoTa());
-        nguyenLieu.setTrangThai(1);
-
-        // save
+        NhaCungCap nhaCungCap = nhaCungCapRepo.findById(request.getMaNcc())
+                        .orElseThrow(() -> {
+                            log.info("Supplier: {} not found", request.getMaNcc());
+                            return new AppException(ErrorCode.NOT_FOUND, "Không tìm thấy nhà cung cấp!");
+                        });
+        nguyenLieu.setTenNguyenLieu(request.getTenNguyenLieu().trim().replaceAll("\\s+", " "));
+        nguyenLieu.setDonVi(request.getDonVi().trim().replaceAll("\\s+", " "));
+        nguyenLieu.setGiaBan(request.getGiaBan());
+        nguyenLieu.setNhaCungCap(nhaCungCap);
+        nguyenLieu.setTrangThai(0);
         nguyenLieuRepo.save(nguyenLieu);
-        return ResponseEntity.ok().body("Successfully created ingredient!");
+        log.info("Successfully created new ingredient: {}", nguyenLieu.getMaNguyenLieu());
+
+        List<Kho> danhSachKho = khoRepo.findByChiNhanh_TrangThai(1);
+        for (Kho kho : danhSachKho) {
+            ChiTietKho chiTietKho = new ChiTietKho();
+            chiTietKho.setKho(kho);
+            chiTietKho.setNguyenLieu(nguyenLieu);
+            chiTietKho.setSoLuong(BigDecimal.valueOf(0));
+            chiTietKhoRepo.save(chiTietKho);
+        }
+        log.info("Successfully duplicated ingredient: {} for all active warehouse", nguyenLieu.getMaNguyenLieu());
     }
 
     @Override
     @Transactional
-    public  ResponseEntity<?> updateIngredient(String maNguyenLieu, CreateIngredientRequest request) {
-        // find ingredient
+    public boolean updateIngredient(String maNguyenLieu, CreateIngredientRequest request) {
+        log.info("Updating ingredient: {}", maNguyenLieu);
         NguyenLieu nguyenLieu = nguyenLieuRepo.findById(maNguyenLieu)
-                .orElseThrow(()-> new RuntimeException("Ingredient doesn't exist!"));
-
-        // check status
-        if (nguyenLieu.getTrangThai() == 2) {
-            return ResponseEntity.status(404).body("This ingredient is already inactive!");
+                .orElseThrow(() -> {
+                    log.info("Ingredient {} not found", maNguyenLieu);
+                    return new AppException(ErrorCode.NOT_FOUND, "Không tìm thấy nguyên liệu!");
+                });
+        boolean changed = false;
+        changed |= updateIfChange(nguyenLieu::getTenNguyenLieu, request.getTenNguyenLieu().trim().replaceAll("\\s+", " "), nguyenLieu::setTenNguyenLieu);
+        changed |= updateIfChange(nguyenLieu::getDonVi, request.getDonVi().trim().replaceAll("\\s+", " "), nguyenLieu::setDonVi);
+        changed |= updateIfChange(nguyenLieu::getGiaBan, request.getGiaBan(), nguyenLieu::setGiaBan);
+        if (!Objects.equals(nguyenLieu.getNhaCungCap().getMaNcc(), request.getMaNcc())) {
+            NhaCungCap nhaCungCap = nhaCungCapRepo.findById(request.getMaNcc())
+                    .orElseThrow(() -> {
+                        log.info("New supplier: {} not found", request.getMaNcc());
+                        return new AppException(ErrorCode.NOT_FOUND, "Không tìm thấy nhà cung cấp mới!");
+                    });
+            nguyenLieu.setNhaCungCap(nhaCungCap);
+            changed = true;
         }
-
-        // check tenNguyenLieu
-        if (!nguyenLieu.getTenNguyenLieu().equals(request.getTenNguyenLieu())) {
-            nguyenLieu.setTenNguyenLieu(request.getTenNguyenLieu());
+        if (changed) {
+            log.info("Successfully updated ingredient: {}", maNguyenLieu);
+        } else {
+            log.info("Nothing has changed, ingredient: {}", maNguyenLieu);
         }
-
-        // check moTa
-        if(!nguyenLieu.getMoTa().equals(request.getMoTa())) {
-            nguyenLieu.setMoTa(request.getMoTa());
-        }
-
-        nguyenLieuRepo.save(nguyenLieu);
-        return ResponseEntity.ok().body("Successfully updated ingredient");
+        return changed;
     }
 
     @Override
     @Transactional
-    public ResponseEntity<?> deleteIngredient(String maNguyenLieu) {
-        // find ingredient
+    public void disableIngredient(String maNguyenLieu) {
+        log.info("Disabling ingredient: {}", maNguyenLieu);
         NguyenLieu nguyenLieu = nguyenLieuRepo.findById(maNguyenLieu)
-                .orElseThrow(()-> new RuntimeException("Ingredient doesn't exist!"));
-
-        // check status
-        if (nguyenLieu.getTrangThai() == 2) {
-            return ResponseEntity.status(404).body("This ingredient is already inactive!");
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Không tìm thấy nguyên liệu!"));
+        if (nguyenLieu.getTrangThai() == 1) {
+            nguyenLieu.setTrangThai(0);
+            log.info("Successfully disabled ingredient: {}", maNguyenLieu);
+        } else {
+            log.info("Ingredient: {} has already been disabled", maNguyenLieu);
+            throw new AppException(ErrorCode.NOTHING_CHANGE, "Nguyên liệu đã bị ngừng sử dụng rồi!");
         }
-
-        // update status
-        nguyenLieu.setTrangThai(2);
-
-        //save
-        nguyenLieuRepo.save(nguyenLieu);
-        return ResponseEntity.ok().body("Successfully inactivated ingredient");
     }
 
     @Override
-    public List<IngredientResponse> getIngredient() {
-        //region manager can see inactive ingredient
-        //warehouse manager can not see inactive ingredient
-        // get maNhanVien
-        String maNhanVien = Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getName();
-
-        // find user_role
-        UserRole userRole = userRoleRepo.findByNhanVien_MaNhanVien(maNhanVien);
-
-        // create list
-        List<NguyenLieu> danhSachNguyenLieu = List.of();
-
-        //check role
-        if (userRole.getRole().getRoleName().toUpperCase().equals("REGION_MANAGER")) {
-            danhSachNguyenLieu = nguyenLieuRepo.findByTrangThaiIn(List.of(1, 2));
+    @Transactional
+    public void enableIngredient(String maNguyenLieu) {
+        log.info("Enabling ingredient: {}", maNguyenLieu);
+        NguyenLieu nguyenLieu = nguyenLieuRepo.findById(maNguyenLieu)
+                .orElseThrow(() -> new AppException(ErrorCode.NOT_FOUND, "Không tìm thấy nguyên liệu!"));
+        if (nguyenLieu.getTrangThai() == 0) {
+            nguyenLieu.setTrangThai(1);
+            log.info("Successfully enabled ingredient: {}", maNguyenLieu);
+        } else {
+            log.info("Ingredient: {} has already been enabled", maNguyenLieu);
+            throw new AppException(ErrorCode.NOTHING_CHANGE, "Nguyên liệu đang được sử dụng rồi!");
         }
-        else if (userRole.getRole().getRoleName().toUpperCase().equals("WAREHOUSE")) {
-            danhSachNguyenLieu = nguyenLieuRepo.findByTrangThaiIn(List.of(1));
-        }
+    }
 
-        //mapping and return
+    @Override
+    public List<IngredientResponse> getIngredients() {
+        log.info("Getting all ingredients");
+        List<NguyenLieu> danhSachNguyenLieu = nguyenLieuRepo.findByTrangThaiInOrderByMaNguyenLieu(List.of(0, 1));
+
         return danhSachNguyenLieu.stream().map(
                 nguyenLieu -> new IngredientResponse(
                         nguyenLieu.getMaNguyenLieu(),
                         nguyenLieu.getTenNguyenLieu(),
-                        nguyenLieu.getMoTa(),
-                        nguyenLieu.getTrangThai()
+                        nguyenLieu.getDonVi(),
+                        nguyenLieu.getGiaBan(),
+                        nguyenLieu.getTrangThai(),
+                        nguyenLieu.getNhaCungCap().getMaNcc(),
+                        nguyenLieu.getNhaCungCap().getMaNcc()
+                )
+        ).toList();
+    }
+
+    @Override
+    public List<IngredientResponse> getIngredientsOfSupplier(String maNcc) {
+        log.info("Getting all ingredients are supplied by supplier: {}", maNcc);
+        List<NguyenLieu> danhSachNguyenLieu = nguyenLieuRepo.findAllOfSupplier(List.of(0, 1), maNcc);
+        return danhSachNguyenLieu.stream().map(
+                nl -> new IngredientResponse(
+                        nl.getMaNguyenLieu(),
+                        nl.getTenNguyenLieu(),
+                        nl.getDonVi(),
+                        nl.getGiaBan(),
+                        nl.getTrangThai(),
+                        maNcc,
+                        nl.getNhaCungCap().getTenNcc()
+                )
+        ).toList();
+    }
+
+    @Override
+    public List<IngredientResponse> getEnabledIngredients() {
+        log.info("Getting all enabled ingredients");
+        List<NguyenLieu> danhSachNguyenLieu = nguyenLieuRepo.findByTrangThaiOrderByMaNguyenLieu(1);
+
+        return danhSachNguyenLieu.stream().map(
+                nl -> new IngredientResponse(
+                        nl.getMaNguyenLieu(),
+                        nl.getTenNguyenLieu(),
+                        nl.getDonVi(),
+                        nl.getGiaBan(),
+                        nl.getTrangThai(),
+                        nl.getNhaCungCap().getMaNcc(),
+                        nl.getNhaCungCap().getTenNcc()
+                )
+        ).toList();
+    }
+
+    @Override
+    public List<IngredientResponse> getDisabledIngredients() {
+        log.info("Getting all disabled ingredients");
+        List<NguyenLieu> danhSachNguyenLieu = nguyenLieuRepo.findByTrangThaiOrderByMaNguyenLieu(0);
+        return danhSachNguyenLieu.stream().map(
+                nl -> new IngredientResponse(
+                        nl.getMaNguyenLieu(),
+                        nl.getTenNguyenLieu(),
+                        nl.getDonVi(),
+                        nl.getGiaBan(),
+                        nl.getTrangThai(),
+                        nl.getNhaCungCap().getMaNcc(),
+                        nl.getNhaCungCap().getTenNcc()
                 )
         ).toList();
     }

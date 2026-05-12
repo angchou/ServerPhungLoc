@@ -12,7 +12,9 @@ public class CTHD {
     @Column(name = "maCthd")
     private String maCTHD;
     @Column(name = "soLuong")
-    private BigDecimal soLuong;
+    private Integer soLuong;
+    @Column(name = "giaSanPham")
+    private BigDecimal giaSanPham;
 
     @ManyToOne
     @JoinColumn(name = "soHoaDon")
@@ -20,6 +22,17 @@ public class CTHD {
     @ManyToOne
     @JoinColumn(name = "maSanPham")
     private SanPham sanPham;
+    @ManyToOne
+    @JoinColumn(name = "maKichCo")
+    private KichCo kichCo;
+
+    public BigDecimal getGiaSanPham() {
+        return giaSanPham;
+    }
+
+    public void setGiaSanPham(BigDecimal giaSanPham) {
+        this.giaSanPham = giaSanPham;
+    }
 
     public String getMaCTHD() {
         return maCTHD;
@@ -29,11 +42,11 @@ public class CTHD {
         this.maCTHD = maCTHD;
     }
 
-    public BigDecimal getSoLuong() {
+    public Integer getSoLuong() {
         return soLuong;
     }
 
-    public void setSoLuong(BigDecimal soLuong) {
+    public void setSoLuong(Integer soLuong) {
         this.soLuong = soLuong;
     }
 
@@ -51,5 +64,13 @@ public class CTHD {
 
     public void setSanPham(SanPham sanPham) {
         this.sanPham = sanPham;
+    }
+
+    public KichCo getKichCo() {
+        return kichCo;
+    }
+
+    public void setKichCo(KichCo kichCo) {
+        this.kichCo = kichCo;
     }
 }

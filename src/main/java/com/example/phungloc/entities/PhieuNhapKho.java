@@ -2,6 +2,7 @@ package com.example.phungloc.entities;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 @Entity
@@ -13,6 +14,8 @@ public class PhieuNhapKho {
     private String maPhieuNhap;
     @Column(name = "ngayTao")
     private LocalDate ngayTao;
+    @Column(name = "triGia")
+    private BigDecimal triGia;
 
     @ManyToOne
     @JoinColumn(name = "maNhanVien")
@@ -51,5 +54,13 @@ public class PhieuNhapKho {
 
     public void setKho(Kho kho) {
         this.kho = kho;
+    }
+
+    public BigDecimal getTriGia() {
+        return triGia;
+    }
+
+    public void setTriGia(BigDecimal triGia) {
+        this.triGia = triGia;
     }
 }

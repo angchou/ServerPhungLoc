@@ -2,6 +2,8 @@ package com.example.phungloc.entities;
 
 import jakarta.persistence.*;
 
+import java.math.BigDecimal;
+
 @Entity
 public class NguyenLieu {
     @Id
@@ -10,10 +12,16 @@ public class NguyenLieu {
     private String maNguyenLieu;
     @Column(name = "tenNguyenLieu")
     private String tenNguyenLieu;
-    @Column(name = "moTa")
-    private String moTa;
+    @Column(name = "donVi")
+    private String donVi;
+    @Column(name = "giaBan")
+    private BigDecimal giaBan;
     @Column(name = "trangThai")
     private Integer trangThai;
+
+    @ManyToOne
+    @JoinColumn(name = "maNcc")
+    private NhaCungCap nhaCungCap;
 
     public String getMaNguyenLieu() {
         return maNguyenLieu;
@@ -31,12 +39,20 @@ public class NguyenLieu {
         this.tenNguyenLieu = tenNguyenLieu;
     }
 
-    public String getMoTa() {
-        return moTa;
+    public String getDonVi() {
+        return donVi;
     }
 
-    public void setMoTa(String moTa) {
-        this.moTa = moTa;
+    public void setDonVi(String donVi) {
+        this.donVi = donVi;
+    }
+
+    public BigDecimal getGiaBan() {
+        return giaBan;
+    }
+
+    public void setGiaBan(BigDecimal giaBan) {
+        this.giaBan = giaBan;
     }
 
     public Integer getTrangThai() {
@@ -45,5 +61,13 @@ public class NguyenLieu {
 
     public void setTrangThai(Integer trangThai) {
         this.trangThai = trangThai;
+    }
+
+    public NhaCungCap getNhaCungCap() {
+        return nhaCungCap;
+    }
+
+    public void setNhaCungCap(NhaCungCap nhaCungCap) {
+        this.nhaCungCap = nhaCungCap;
     }
 }
